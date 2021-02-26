@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from random import randint
 pole = [i for i in range(1, 10)]
 play = '1'
