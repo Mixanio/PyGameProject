@@ -12,17 +12,17 @@ class Board:
         self.top = 10
         self.cell_size = 30
         self.turn = bool(randint(0, 10) % 2)
+        self.img_x = pygame.image.load('img/X.png')
+        self.img_o = pygame.image.load('img/O.png')
 
     def render(self, screen):
-        img_x = pygame.image.load('img/X.png')
-        img_o = pygame.image.load('img/O.png')
         colors = [0, pygame.Color("blue"), pygame.Color("red")]
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[y][x] == 1:
-                    screen.blit(img_o, (x * self.cell_size + self.left, y * self.cell_size + self.top))
+                    screen.blit(self.img_o, (x * self.cell_size + self.left, y * self.cell_size + self.top))
                 elif self.board[y][x] == 2:
-                    screen.blit(img_x, (x * self.cell_size + self.left, y * self.cell_size + self.top))
+                    screen.blit(self.img_x, (x * self.cell_size + self.left, y * self.cell_size + self.top))
                 pygame.draw.rect(screen, pygame.Color("white"), (
                     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
                     self.cell_size), 1)
