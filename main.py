@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pygame
 import ai
-from random import randint
 
 
 class Board:
@@ -13,6 +12,8 @@ class Board:
         self.top = 10
         self.cell_size = 30
         self.turn = 2
+        self.win = 0
+        self.isfull = False
 
     def render(self, screen):
         img_x = pygame.image.load('img/X.png')
@@ -29,16 +30,13 @@ class Board:
                     self.cell_size), 1)
 
     def on_click(self, cell):
-        try:
-            if self.board[cell[1]][cell[0]] == 0:
-                if self.turn:
+        if not self.win:
+            try:
+                if self.board[cell[1]][cell[0]] == 0:
                     self.board[cell[1]][cell[0]] = 2
                     self.turn = True
-                else:
-                    self.board[cell[1]][cell[0]] = 2
-                    self.turn = True
-        except TypeError:
-            pass
+            except TypeError:
+                pass
 
     def get_cell(self, mouse_pos):
         cell_x = (mouse_pos[0] - self.left) // self.cell_size
@@ -58,25 +56,30 @@ class Board:
         
     def restart(self):
         self.board = [[0] * self.width for _ in range(self.height)]
+        self.win = 0
+        self.isfull = False
     
 class Buttons:
-    def __init__(self, x, y, width, height, text='', font=14):
+    def __init__(self, command, x, y, width, height, text='', font=14, x_text=10, y_text=10):
         self.width = width
         self.height = height
         self.x = x
         self.y = y
+        self.x_text = x_text
+        self.y_text = y_text        
         self.text = text
         self.font = font
+        self.command = command
 
     def render(self, screen):
         pygame.draw.rect(screen, pygame.Color("white"), (self.x, self.y, self.width, self.height), 1)
         font = pygame.font.SysFont('Times New Roman', self.font)
         t = font.render(self.text, False, pygame.Color("white"))
-        screen.blit(t, (self.x + 10, self.y + 10))        
+        screen.blit(t, (self.x + self.x_text, self.y + self.y_text))        
 
     def click(self, mouse_pos):
         if mouse_pos[0] in range(self.x, self.x + self.width + 1) and mouse_pos[1] in range(self.y, self.y + self.height + 1):
-            board.restart()
+            self.command()
         
 
 pygame.init()
@@ -84,7 +87,8 @@ size = 500, 500
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Крестики-нолики')
 board = Board(3, 3)
-button = Buttons(50,425,400,50,text='Restart',font=32)
+button = Buttons(board.restart,50,425,400,50,text='Restart',font=32,x_text=10,y_text=10)
+font = pygame.font.SysFont('Times New Roman', 32)
 board.set_view(100, 100, 100)
 
 running = True
@@ -98,9 +102,25 @@ while running:
     screen.fill((0, 0, 0))
     board.render(screen)
     button.render(screen)
-    if not ai.check_win(board.board) and board.turn:
-        ai.ai(board.board, 1)
-        board.turn = False
+    board.win = ai.check_win(board.board)
+    if not board.isfull:
+        if board.turn and board.win == 0:
+            board.board = ai.ai(board.board, 1)
+            board.turn = False
+        if board.win == 1:
+            t = font.render('Вы проиграли!', False, pygame.Color("white"))
+            screen.blit(t, (10, 10)) 
+        elif board.win == 2:
+            t = font.render('Вы выиграли!', False, pygame.Color("white"))
+            screen.blit(t, (10, 10))
+        else:
+            board.isfull = True
+            for i in board.board:
+                if 0 in i:
+                    board.isfull = False
+    else:
+        t = font.render('Ничья!', False, pygame.Color("white"))
+        screen.blit(t, (10, 10))
     pygame.time.Clock().tick(30)
     pygame.display.flip()
 pygame.quit()
