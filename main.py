@@ -87,7 +87,7 @@ size = 500, 500
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Крестики-нолики')
 board = Board(3, 3)
-button = Buttons(board.restart,50,425,400,50,text='Restart',font=32,x_text=10,y_text=10)
+restart = Buttons(board.restart,50,425,400,50,text='Restart',font=32,x_text=10,y_text=10)
 font = pygame.font.SysFont('Times New Roman', 32)
 board.set_view(100, 100, 100)
 
@@ -98,10 +98,10 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
-            button.click(event.pos)
+            restart.click(event.pos)
     screen.fill((0, 0, 0))
     board.render(screen)
-    button.render(screen)
+    restart.render(screen)
     board.win = ai.check_win(board.board)
     if not board.isfull:
         if board.turn and board.win == 0:
