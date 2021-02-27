@@ -87,7 +87,7 @@ size = 500, 500
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Крестики-нолики')
 board = Board(3, 3)
-restart = Buttons(board.restart,50,425,400,50,text='Restart',font=32,x_text=10,y_text=10)
+restart = Buttons(board.restart,50,425,400,50,text='Играть заново',font=32,x_text=100,y_text=10)
 font = pygame.font.SysFont('Times New Roman', 32)
 board.set_view(100, 100, 100)
 
@@ -102,7 +102,7 @@ while running:
     screen.fill((0, 0, 0))
     board.render(screen)
     restart.render(screen)
-    board.win = ai.check_win(board.board)
+    board.win = ai.check_win(board.board)    
     if not board.isfull:
         if board.turn and board.win == 0:
             board.board = ai.ai(board.board, 1)
@@ -119,8 +119,15 @@ while running:
                 if 0 in i:
                     board.isfull = False
     else:
-        t = font.render('Ничья!', False, pygame.Color("white"))
-        screen.blit(t, (10, 10))
+        if board.win == 1:
+            t = font.render('Вы проиграли!', False, pygame.Color("white"))
+            screen.blit(t, (10, 10)) 
+        elif board.win == 2:
+            t = font.render('Вы выиграли!', False, pygame.Color("white"))
+            screen.blit(t, (10, 10))
+        else:
+            t = font.render('Ничья!', False, pygame.Color("white"))
+            screen.blit(t, (10, 10))
     pygame.time.Clock().tick(30)
     pygame.display.flip()
 pygame.quit()
