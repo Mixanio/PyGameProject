@@ -86,9 +86,20 @@ def to_menu():
     in_menu = True
     board.restart()
 
-def to_game():
-    global in_menu
+def level_0():
+    global in_menu, level
     in_menu = False
+    level = 0
+    
+def level_1():
+    global in_menu, level
+    in_menu = False
+    level = 1
+    
+def level_2():
+    global in_menu, level
+    in_menu = False
+    level = 2
 
 pygame.init()
 size = 500, 500
@@ -98,11 +109,16 @@ pygame.display.set_caption('Крестики-нолики')
 board = Board(3, 3)
 restart = Buttons(board.restart,30,450,210,50,text='Играть заново',font=32,x_text=10,y_text=10)
 menu = Buttons(to_menu,260,450,210,50,text='Главное меню',font=32,x_text=10,y_text=10)
-start_game = Buttons(to_game,145,125,210,50,text='  Новая игра',font=32,x_text=10,y_text=10)
+level0 = Buttons(level_0,145,125,210,50,text='Легкий',font=32,x_text=10,y_text=10)
+level1 = Buttons(level_1,145,175,210,50,text='Средний',font=32,x_text=10,y_text=10)
+level2 = Buttons(level_2,145,225,210,50,text='Сложный',font=32,x_text=10,y_text=10)
 font = pygame.font.SysFont('Times New Roman', 32)
+font2 = pygame.font.SysFont('Times New Roman', 42)
 board.set_view(100, 100, 100)
+level = 1
 running = True
 while running:
+    screen.fill((0, 0, 0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -112,10 +128,11 @@ while running:
                 restart.click(event.pos)
                 menu.click(event.pos)
             else:
-                start_game.click(event.pos)
-    t = font.render("Крестики-нолики", False, pygame.Color("white"))
-    screen.fill((0, 0, 0))
-    screen.blit(t, (130, 20))
+                level0.click(event.pos)
+                level1.click(event.pos)
+                level2.click(event.pos)
+    t = font2.render("Крестики-нолики", False, pygame.Color("white"))
+    screen.blit(t, (100, 10))
     
     if not in_menu:
         board.render(screen)
@@ -124,13 +141,13 @@ while running:
         board.win = ai.check_win(board.board)    
         if not board.isfull:
             if board.turn and board.win == 0:
-                board.board = ai.ai(board.board, 1)
+                board.board = ai.ai(board.board, level)
                 board.turn = False
             if board.win == 1:
-                t = font.render('Вы проиграли!', False, pygame.Color("white"))
+                t = font.render(' Вы проиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410)) 
             elif board.win == 2:
-                t = font.render('Вы выиграли!', False, pygame.Color("white"))
+                t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
             else:
                 board.isfull = True
@@ -139,16 +156,20 @@ while running:
                         board.isfull = False
         else:
             if board.win == 1:
-                t = font.render('Вы проиграли!', False, pygame.Color("white"))
+                t = font.render(' Вы проиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410)) 
             elif board.win == 2:
-                t = font.render('Вы выиграли!', False, pygame.Color("white"))
+                t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
             else:
-                t = font.render('Ничья!', False, pygame.Color("white"))
+                t = font.render('       Ничья!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
     else:
-        start_game.render(screen)
+        t = font.render("Игра с компьютером", False, pygame.Color("white"))
+        screen.blit(t, (120, 70))
+        level0.render(screen)
+        level1.render(screen)
+        level2.render(screen)
         
     pygame.time.Clock().tick(30)
     pygame.display.flip()
