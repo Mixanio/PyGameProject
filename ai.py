@@ -6,7 +6,9 @@ def ai(pole, params):  # 1 - ai, 2 - player
     turn = True
     isfull = False
     if not isfull:
-        if params == 0:
+        if params == -1:
+            return pole
+        elif params == 0:
             while not isfull:
                 isfull = True
                 for i in pole:
@@ -182,15 +184,16 @@ def ai(pole, params):  # 1 - ai, 2 - player
                         pole[1][1] = 1
                         return pole
                     elif pole[1][1] == 0:
-                            pole[1][1] = 1
-                            return pole
+                        pole[1][1] = 1
+                        return pole
                     else:
                         while True:
                             i = randint(0, 9)
                             if i % 2 == 0 and i != 4:
                                 if field[i] == 0 and i not in x:
                                     field[i] = 1
-                                    pole = [field[0:3], field[3:6], field[6:9]]
+                                    pole = [field[0:3],
+                                            field[3:6], field[6:9]]
                                     return pole
                                 else:
                                     if field[0] > 0 and field[2] > 0 and field[6] > 0 and field[8] > 0:
