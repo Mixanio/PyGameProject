@@ -164,14 +164,14 @@ def ai(pole, params):  # 1 - ai, 2 - player
                     if pole[x.index(0)][2 - x.index(0)] == 0:
                         pole[x.index(0)][2 - x.index(0)] = 1
                         return pole
-            if turn:
+            if turn: # 1
                 is_empty = True
-                while not isfull:
-                    isfull = True
-                    for i in pole:
-                        if 0 in i:
-                            isfull = False
-                            break
+                isfull = True
+                for i in pole:
+                    if 0 in i:
+                        isfull = False
+                        break
+                if not isfull:
                     field = []
                     for i in pole:
                         field += i
@@ -184,11 +184,11 @@ def ai(pole, params):  # 1 - ai, 2 - player
                     elif pole[1][1] == 0:
                         pole[1][1] = 1
                         return pole
-                    else:
+                    else: # 2
                         while True:
                             i = randint(0, 9)
                             if i % 2 == 0 and i != 4:
-                                if field[i] == 0 and i not in x:
+                                if field[i] == 0:
                                     field[i] = 1
                                     pole = [field[0:3],
                                             field[3:6], field[6:9]]
@@ -196,10 +196,12 @@ def ai(pole, params):  # 1 - ai, 2 - player
                                 else:
                                     if field[0] > 0 and field[2] > 0 and field[6] > 0 and field[8] > 0:
                                         break
-                        x = randint(0, 2)
-                        y = randint(0, 2)
-                        if pole[y][x] == 0:
-                            pole[y][x] = 1
+                        while True:
+                            x = randint(0, 2)
+                            y = randint(0, 2)
+                            if pole[y][x] == 0:
+                                pole[y][x] = 1
+                                break
     return pole
 
 
