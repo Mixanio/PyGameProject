@@ -129,12 +129,19 @@ def read_info():
     return res
 
 
-def save_info():
+def save_info(res):
     f = open('results.txt', 'w')        
     for i in res:
         f.write(str(i[0]) + ' ' + str(i[1]) + ' ' + str(i[2]) + '\n')
     f.close()    
         
+
+def clear_save():
+    f = open('results.txt', 'w')        
+    for i in res:
+        f.write('0 0 0\n')
+    f.close()     
+
 
 pygame.init()
 size = 500, 500
@@ -148,6 +155,7 @@ level0 = Buttons(level_0, 40, 125, 190, 50, text='Легкий', font=32, x_text
 level1 = Buttons(level_1, 40, 175, 190, 50, text='Средний', font=32, x_text=10, y_text=10)
 level2 = Buttons(level_2, 40, 225, 190, 50, text='Сложный', font=32, x_text=10, y_text=10)
 two_player = Buttons(player, 145, 325, 210, 50, text='Два игрока', font=32, x_text=10, y_text=10)
+reset = Buttons(clear_save, 170, 400, 155, 30, text='Обнулить результат', font=16, x_text=10, y_text=5)
 font = pygame.font.SysFont('Times New Roman', 32)
 font2 = pygame.font.SysFont('Times New Roman', 42)
 font3 = pygame.font.SysFont('Times New Roman', 24)
@@ -178,6 +186,8 @@ while running:
                 level1.click(event.pos)
                 level2.click(event.pos)
                 two_player.click(event.pos)
+                reset.click(event.pos)
+                read_info()
     t = font2.render("Крестики-нолики", False, pygame.Color("white"))
     screen.blit(t, (100, 10))
     if in_menu == 0:
@@ -200,12 +210,14 @@ while running:
                 if board.flag:
                     res[level][1] += 1
                     board.flag = False
+                    save_info(res)
             elif board.win == 2:
                 t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
                 if board.flag:
                     res[level][0] += 1
                     board.flag = False
+                    save_info(res)
         else:
             if board.win == 1:
                 t = font.render(' Вы проиграли!', False, pygame.Color("white"))
@@ -213,18 +225,21 @@ while running:
                 if board.flag:
                     res[level][1] += 1
                     board.flag = False
+                    save_info(res)
             elif board.win == 2:
                 t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
                 if board.flag:
                     res[level][0] += 1
                     board.flag = False
+                    save_info(res)
             else:
                 t = font.render('       Ничья!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
                 if board.flag:
                     res[level][2] += 1
-                    board.flag = False                    
+                    board.flag = False   
+                    save_info(res)
     elif in_menu == -1:
         board.render(screen)
         restart.render(screen)
@@ -260,7 +275,6 @@ while running:
                 t = font.render('       Ничья!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
     else:
-        save_info()
         res = read_info()        
         t = font3.render("Игра с компьютером     Побед/пораж./ничьих", False, pygame.Color("white"))
         t0 = font3.render(str(res[0][0]) + ' / ' + str(res[0][1]) + ' / ' + str(res[0][2]), False, pygame.Color("white"))
@@ -274,7 +288,7 @@ while running:
         level2.render(screen)
         screen.blit(t2, (330, 235))
         two_player.render(screen)
-    save_info()
+        reset.render(screen)
     pygame.time.Clock().tick(30)
     pygame.display.flip()
 pygame.quit()
