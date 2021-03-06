@@ -138,8 +138,7 @@ def ai(pole, params):  # 1 - ai, 2 - player
                         if j == 0:
                             if 0 in i:
                                 pole[pole.index(i)][i.index(j)] = 1
-                                turn = False
-                                break
+                                return pole
             if turn:  # по вертикали
                 for i in range(0, 3):
                     x = []
@@ -148,8 +147,7 @@ def ai(pole, params):  # 1 - ai, 2 - player
                     if sum(x) == 4 and 0 in x:
                         if 0 in x:
                             pole[x.index(0)][i] = 1
-                            turn = False
-                            break
+                            return pole
             if turn:  # по диагонали 1
                 x = []
                 for i in range(0, 3):
@@ -157,7 +155,7 @@ def ai(pole, params):  # 1 - ai, 2 - player
                 if sum(x) == 4 and 0 in x:
                     if pole[x.index(0)][x.index(0)] == 0:
                         pole[x.index(0)][x.index(0)] = 1
-                        turn = False
+                        return pole
             if turn:  # по диагонали 2
                 x = []
                 for i in range(0, 3):
@@ -165,7 +163,7 @@ def ai(pole, params):  # 1 - ai, 2 - player
                 if sum(x) == 4 and 0 in x:
                     if pole[x.index(0)][2 - x.index(0)] == 0:
                         pole[x.index(0)][2 - x.index(0)] = 1
-                        turn = False
+                        return pole
             if turn:
                 is_empty = True
                 while not isfull:
