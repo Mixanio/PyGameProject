@@ -15,11 +15,11 @@ class Board:
         self.win = 0
         self.isfull = False
         self.tic_tac_toe = 2
+        self.flag = True
 
     def render(self, screen):
         img_x = pygame.image.load('img/X.png')
         img_o = pygame.image.load('img/O.png')
-        colors = [0, pygame.Color("blue"), pygame.Color("red")]
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[y][x] == 1:
@@ -61,6 +61,7 @@ class Board:
         self.isfull = False
         board.turn = ai.randint(0, 10) % 2
         self.tic_tac_toe = 2
+        self.flag = True
 
 
 class Buttons:
@@ -114,7 +115,26 @@ def player():
     global in_menu, level
     in_menu = -1
     level = -1
+    
+    
+def read_info():
+    f = open('results.txt', 'r')
+    res = []
+    a = f.read().split('\n')
+    for i in a:
+        res.append(list(map(int, i.split())))
+    try: res.remove([])
+    except: pass
+    f.close()  
+    return res
 
+
+def save_info():
+    f = open('results.txt', 'w')        
+    for i in res:
+        f.write(str(i[0]) + ' ' + str(i[1]) + ' ' + str(i[2]) + '\n')
+    f.close()    
+        
 
 pygame.init()
 size = 500, 500
@@ -124,17 +144,27 @@ pygame.display.set_caption('Крестики-нолики')
 board = Board(3, 3)
 restart = Buttons(board.restart, 30, 450, 210, 50, text='Играть заново', font=32, x_text=10, y_text=10)
 menu = Buttons(to_menu, 260, 450, 210, 50, text='Главное меню', font=32, x_text=10, y_text=10)
-level0 = Buttons(level_0, 145, 125, 210, 50, text='Легкий', font=32, x_text=10, y_text=10)
-level1 = Buttons(level_1, 145, 175, 210, 50, text='Средний', font=32, x_text=10, y_text=10)
-level2 = Buttons(level_2, 145, 225, 210, 50, text='Сложный', font=32, x_text=10, y_text=10)
+level0 = Buttons(level_0, 40, 125, 190, 50, text='Легкий', font=32, x_text=10, y_text=10)
+level1 = Buttons(level_1, 40, 175, 190, 50, text='Средний', font=32, x_text=10, y_text=10)
+level2 = Buttons(level_2, 40, 225, 190, 50, text='Сложный', font=32, x_text=10, y_text=10)
 two_player = Buttons(player, 145, 325, 210, 50, text='Два игрока', font=32, x_text=10, y_text=10)
 font = pygame.font.SysFont('Times New Roman', 32)
 font2 = pygame.font.SysFont('Times New Roman', 42)
+font3 = pygame.font.SysFont('Times New Roman', 24)
 board.set_view(100, 100, 100)
 level = 1
 running = True
+n = 0
+res = read_info()
 while running:
     screen.fill((0, 0, 0))
+    if board.win == 2 and in_menu == 0:
+        if n > 29: n = 0
+        img = pygame.image.load('img/win/' + str(int(n)) + '.gif') 
+        screen.blit(img, (-150, 50))
+        n += 0.75
+    else:
+        n = 0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -154,32 +184,47 @@ while running:
         board.render(screen)
         restart.render(screen)
         menu.render(screen)
+        board.isfull = True
+        for i in board.board:
+            if 0 in i:
+                board.isfull = False  
         board.win = ai.check_win(board.board)
         if not board.isfull:
             if board.turn and board.win == 0:
                 board.board = ai.ai(board.board, level)
+                board.win = ai.check_win(board.board)
                 board.turn = False
             if board.win == 1:
                 t = font.render(' Вы проиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
+                if board.flag:
+                    res[level][1] += 1
+                    board.flag = False
             elif board.win == 2:
                 t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
-            else:
-                board.isfull = True
-                for i in board.board:
-                    if 0 in i:
-                        board.isfull = False
+                if board.flag:
+                    res[level][0] += 1
+                    board.flag = False
         else:
             if board.win == 1:
                 t = font.render(' Вы проиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
+                if board.flag:
+                    res[level][1] += 1
+                    board.flag = False
             elif board.win == 2:
                 t = font.render(' Вы выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
+                if board.flag:
+                    res[level][0] += 1
+                    board.flag = False
             else:
                 t = font.render('       Ничья!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
+                if board.flag:
+                    res[level][2] += 1
+                    board.flag = False                    
     elif in_menu == -1:
         board.render(screen)
         restart.render(screen)
@@ -207,6 +252,7 @@ while running:
             if board.win == 1:
                 t = font.render(' O выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
+                
             elif board.win == 2:
                 t = font.render(' X выиграли!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
@@ -214,12 +260,21 @@ while running:
                 t = font.render('       Ничья!', False, pygame.Color("white"))
                 screen.blit(t, (150, 410))
     else:
-        t = font.render("Игра с компьютером", False, pygame.Color("white"))
-        screen.blit(t, (120, 70))
+        save_info()
+        res = read_info()        
+        t = font3.render("Игра с компьютером     Побед/пораж./ничьих", False, pygame.Color("white"))
+        t0 = font3.render(str(res[0][0]) + ' / ' + str(res[0][1]) + ' / ' + str(res[0][2]), False, pygame.Color("white"))
+        t1 = font3.render(str(res[1][0]) + ' / ' + str(res[1][1]) + ' / ' + str(res[1][2]), False, pygame.Color("white"))
+        t2 = font3.render(str(res[2][0]) + ' / ' + str(res[2][1]) + ' / ' + str(res[2][2]), False, pygame.Color("white"))
+        screen.blit(t, (20, 70))
         level0.render(screen)
+        screen.blit(t0, (330, 135))
         level1.render(screen)
+        screen.blit(t1, (330, 185))
         level2.render(screen)
+        screen.blit(t2, (330, 235))
         two_player.render(screen)
+    save_info()
     pygame.time.Clock().tick(30)
     pygame.display.flip()
 pygame.quit()
